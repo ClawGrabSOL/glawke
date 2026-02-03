@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLAWKE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Arial Black', Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .logo {
+            width: 200px;
+            height: auto;
+            margin-bottom: 30px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .title {
+            font-size: 42px;
+            letter-spacing: 8px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 28px;
+            letter-spacing: 4px;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .price {
+            font-size: 48px;
+            color: #00ff00;
+            font-weight: bold;
+            margin-bottom: 40px;
+            text-shadow: 0 0 20px #00ff00, 0 0 40px #00ff00;
+        }
+
+        .submit-section {
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 50px;
+        }
+
+        .submit-section h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            color: #888;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ca-input {
+            flex: 1;
+            padding: 15px 20px;
+            font-size: 16px;
+            background: #111;
+            border: 2px solid #333;
+            color: #fff;
+            border-radius: 8px;
+            outline: none;
+            font-family: monospace;
+        }
+
+        .ca-input:focus {
+            border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .ca-input::placeholder {
+            color: #555;
+        }
+
+        .submit-btn {
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            background: #00ff00;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #00cc00;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+
+        .submit-btn:disabled {
+            background: #333;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .live-feed {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .live-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .live-dot {
+            width: 12px;
+            height: 12px;
+            background: #ff0000;
+            border-radius: 50%;
+            animation: blink 1s ease-in-out infinite;
+        }
+
+        .live-dot.connected {
+            background: #00ff00;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .live-header h2 {
+            font-size: 20px;
+            letter-spacing: 3px;
+            color: #fff;
+        }
+
+        .ca-list {
+            background: #0a0a0a;
+            border: 1px solid #222;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .ca-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background: #111;
+            border-radius: 6px;
+            border-left: 4px solid #00ff00;
+            animation: slideIn 0.3s ease;
+        }
+
+        .ca-item.new {
+            animation: flash 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes flash {
+            0%, 100% { background: #111; }
+            50% { background: #1a3a1a; }
+        }
+
+        .ca-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .ca-rank {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ff00;
+            margin-right: 15px;
+            min-width: 50px;
+        }
+
+        .ca-address {
+            font-family: monospace;
+            font-size: 14px;
+            color: #ccc;
+            word-break: break-all;
+        }
+
+        .ca-time {
+            margin-left: auto;
+            font-size: 12px;
+            color: #555;
+            white-space: nowrap;
+            padding-left: 15px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #444;
+            font-size: 16px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #111;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00ff00;
+        }
+    </style>
+</head>
+<body>
+    <img src="logo.png" alt="Glawke Logo" class="logo">
+    
+    <h1 class="title">GLAWKE</h1>
+    <p class="subtitle">CANDLE BUY</p>
+    <p class="price">1.5 SOL</p>
+
+    <div class="submit-section">
+        <h2>SUBMIT CONTRACT ADDRESS</h2>
+        <div class="input-group">
+            <input type="text" class="ca-input" id="caInput" placeholder="Paste CA here...">
+            <button class="submit-btn" id="submitBtn" onclick="submitCA()">SUBMIT</button>
+        </div>
+    </div>
+
+    <div class="live-feed">
+        <div class="live-header">
+            <div class="live-dot" id="liveDot"></div>
+            <h2>LIVE SUBMISSIONS</h2>
+        </div>
+        <div class="ca-list" id="caList">
+            <div class="empty-state">Connecting...</div>
+        </div>
+    </div>
+
+    <script>
+        let currentData = [];
+        let eventSource = null;
+
+        function renderList(data, highlightNew = false) {
+            const list = document.getElementById('caList');
+            
+            if (data.length === 0) {
+                list.innerHTML = '<div class="empty-state">No submissions yet...</div>';
+                return;
+            }
+
+            const newIds = highlightNew ? 
+                data.filter(item => !currentData.find(c => c.id === item.id)).map(i => i.id) : [];
+
+            list.innerHTML = data.map((item, index) => `
+                <div class="ca-item ${newIds.includes(item.id) ? 'new' : ''}">
+                    <span class="ca-rank">#${index + 1}</span>
+                    <span class="ca-address">${item.ca}</span>
+                    <span class="ca-time">${item.time}</span>
+                </div>
+            `).join('');
+
+            currentData = data;
+        }
+
+        async function submitCA() {
+            const input = document.getElementById('caInput');
+            const btn = document.getElementById('submitBtn');
+            const ca = input.value.trim();
+            
+            if (!ca) return;
+
+            btn.disabled = true;
+            btn.textContent = '...';
+
+            try {
+                const res = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ca })
+                });
+
+                if (res.ok) {
+                    input.value = '';
+                }
+            } catch (err) {
+                console.error('Submit error:', err);
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'SUBMIT';
+        }
+
+        function connectStream() {
+            const dot = document.getElementById('liveDot');
+            
+            eventSource = new EventSource('/api/stream');
+
+            eventSource.onopen = () => {
+                dot.classList.add('connected');
+            };
+
+            eventSource.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                renderList(data, true);
+            };
+
+            eventSource.onerror = () => {
+                dot.classList.remove('connected');
+                setTimeout(connectStream, 3000);
+            };
+        }
+
+        document.getElementById('caInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                submitCA();
+            }
+        });
+
+        connectStream();
+    </script>
+</body>
+</html>
