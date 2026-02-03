@@ -136,13 +136,9 @@
         .live-dot {
             width: 12px;
             height: 12px;
-            background: #ff0000;
+            background: #00ff00;
             border-radius: 50%;
             animation: blink 1s ease-in-out infinite;
-        }
-
-        .live-dot.connected {
-            background: #00ff00;
         }
 
         @keyframes blink {
@@ -269,24 +265,24 @@
             <h2>LIVE SUBMISSIONS</h2>
         </div>
         <div class="ca-list" id="caList">
-            <div class="empty-state">Connecting...</div>
+            <div class="empty-state">Loading...</div>
         </div>
     </div>
 
     <script>
         let currentData = [];
-        let eventSource = null;
+        let lastIds = new Set();
 
         function renderList(data, highlightNew = false) {
             const list = document.getElementById('caList');
             
-            if (data.length === 0) {
+            if (!data || data.length === 0) {
                 list.innerHTML = '<div class="empty-state">No submissions yet...</div>';
                 return;
             }
 
             const newIds = highlightNew ? 
-                data.filter(item => !currentData.find(c => c.id === item.id)).map(i => i.id) : [];
+                data.filter(item => !lastIds.has(item.id)).map(i => i.id) : [];
 
             list.innerHTML = data.map((item, index) => `
                 <div class="ca-item ${newIds.includes(item.id) ? 'new' : ''}">
@@ -296,7 +292,18 @@
                 </div>
             `).join('');
 
+            lastIds = new Set(data.map(i => i.id));
             currentData = data;
+        }
+
+        async function fetchSubmissions() {
+            try {
+                const res = await fetch('/api/submissions');
+                const data = await res.json();
+                renderList(data, true);
+            } catch (err) {
+                console.error('Fetch error:', err);
+            }
         }
 
         async function submitCA() {
@@ -310,7 +317,7 @@
             btn.textContent = '...';
 
             try {
-                const res = await fetch('/api/submit', {
+                const res = await fetch('/api/submissions', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ca })
@@ -318,6 +325,7 @@
 
                 if (res.ok) {
                     input.value = '';
+                    fetchSubmissions();
                 }
             } catch (err) {
                 console.error('Submit error:', err);
@@ -327,33 +335,17 @@
             btn.textContent = 'SUBMIT';
         }
 
-        function connectStream() {
-            const dot = document.getElementById('liveDot');
-            
-            eventSource = new EventSource('/api/stream');
-
-            eventSource.onopen = () => {
-                dot.classList.add('connected');
-            };
-
-            eventSource.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                renderList(data, true);
-            };
-
-            eventSource.onerror = () => {
-                dot.classList.remove('connected');
-                setTimeout(connectStream, 3000);
-            };
-        }
-
         document.getElementById('caInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 submitCA();
             }
         });
 
-        connectStream();
+        // Initial fetch
+        fetchSubmissions();
+
+        // Poll every 2 seconds for live updates
+        setInterval(fetchSubmissions, 2000);
     </script>
 </body>
 </html>
