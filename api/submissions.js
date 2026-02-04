@@ -8,7 +8,7 @@ const redis = new Redis({
 export default async function handler(req, res) {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (req.method === 'OPTIONS') {
@@ -47,6 +47,19 @@ export default async function handler(req, res) {
         await redis.ltrim('submissions', 0, 99);
 
         return res.status(200).json({ success: true, submission });
+    }
+
+    if (req.method === 'DELETE') {
+        // Wipe all submissions
+        const { secret } = req.body || {};
+        
+        // Simple secret check (use env var in production)
+        if (secret !== 'glawke-wipe-2026') {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        await redis.del('submissions');
+        return res.status(200).json({ success: true, message: 'All submissions wiped' });
     }
 
     return res.status(405).json({ error: 'Method not allowed' });
